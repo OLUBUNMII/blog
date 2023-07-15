@@ -1,44 +1,45 @@
 <?php include 'partials/header.php';
+
+
+
+
+//fetch post from db
+if (isset($_GET['id'])) {
+    $id = filter_var($_GET['id'], FILTER_SANITIZE_NUMBER_INT);
+    $query = "SELECT * FROM posts WHERE id=$id";
+    $result = mysqli_query($connection, $query);
+    $post = mysqli_fetch_assoc($result);
+} else {
+    header('location:' . ROOT_URL . 'blog.php');
+    die();
+}
 ?>
 
 <section class="singlepost">
     <div class="container singlepost__container">
-        <h2>Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio.</h2>
+        <h2><?= $post['title'] ?></h2>
         <div class="post__author">
+            <?php
+            //fetch authors from users table
+            $author_id = $post['author_id'];
+            $author_query = "SELECT * FROM users WHERE id=$author_id";
+            $author_result = mysqli_query($connection, $author_query);
+            $author = mysqli_fetch_assoc($author_result);
+
+            ?>
             <div class="post__author-avatar">
-                <img src="./Img/prince-akachi-4Yv84VgQkRM-unsplash.jpg" alt="">
+                <img src="./images/<?= $author['avatar'] ?> ">
             </div>
             <div class="post__author-info">
-                <h5>Torobong Lucy</h5>
-                <small>August 30, 2022 - 11:11</small>
+                <h5><?= "{$author['firstname']} {$author['lastname']}" ?></h5>
+                <small><?= date("M d, Y - H:i", strtotime($post['date_time'])) ?></small>
             </div>
         </div>
         <div class="singlepost__thumbnail">
-            <img src="./Img/alvin-balemesa-MYfq3tf34p8-unsplash (1).jpg" alt="">
+            <img src="./images/<?= $post['thumbnail'] ?>">
         </div>
         <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-            Soluta sunt perspiciatis architecto provident neque et quam a voluptate excepturi velit,
-            similique at saepe voluptates praesentium accusantium ducimus cupiditate eos error consequuntur fugiat molestiae?
-            Expedita, inventore. Aperiam, voluptas optio? Qui, similique!
-        </p>
-        <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-            Soluta sunt perspiciatis architecto provident neque et quam a voluptate excepturi velit,
-            similique at saepe voluptates praesentium accusantium ducimus cupiditate eos error consequuntur fugiat molestiae?
-            Expedita, inventore. Aperiam, voluptas optio? Qui, similique!
-        </p>
-        <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-            Soluta sunt perspiciatis architecto provident neque et quam a voluptate excepturi velit,
-            similique at saepe voluptates praesentium accusantium ducimus cupiditate eos error consequuntur fugiat molestiae?
-            Expedita, inventore. Aperiam, voluptas optio? Qui, similique!
-        </p>
-        <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-            Soluta sunt perspiciatis architecto provident neque et quam a voluptate excepturi velit,
-            similique at saepe voluptates praesentium accusantium ducimus cupiditate eos error consequuntur fugiat molestiae?
-            Expedita, inventore. Aperiam, voluptas optio? Qui, similique!
+            <?= $post['body'] ?>
         </p>
     </div>
 

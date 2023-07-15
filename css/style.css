@@ -131,7 +131,7 @@ nav button{
     height: 2.5rem;
     border-radius: 50%;
     overflow: hidden;
-    border: 0.3rem ;
+    border: 0.3rem solid black;
 }
 
 .nav__logo span{
@@ -462,6 +462,7 @@ footer ul li a :hover {
     background: orangered;
     display: grid;
     place-items: center;
+    width: 100vw;
 }
 
 .category__title h2 {

@@ -23,7 +23,7 @@ unset($_SESSION['add-category-data']);
         <form action="<?= ROOT_URL ?>admin/add-category-logic.php" method="POST">
             <input type="text" value="<?= $title ?>" name="title" placeholder="Title">
             <textarea rows="4" value="<?= $description ?>" name="description" placeholder="Description"></textarea>
-            <button type="submit" name="submit " class="btn1">Add Category </button>
+            <button type="submit" name="submit" class="btn1"> Add Category </button>
         </form>
     </div>
 

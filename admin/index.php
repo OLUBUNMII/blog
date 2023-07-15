@@ -1,9 +1,52 @@
 <?php
 include 'partials/header.php';
+
+$current_user_id = $_SESSION['user-id'];
+$query = "SELECT id, title, category_id FROM posts WHERE author_id = $current_user_id ORDER BY id DESC";
+$posts = mysqli_query($connection, $query);
 ?>
 
 
 <section class="dashboard">
+    <?php if (isset($_SESSION['add-post-success'])) : ?>
+        <div class="alert__message success container">
+            <p>
+                <?= $_SESSION['add-post-success'];
+                unset($_SESSION['add-post-success']);
+                ?>
+            </p>
+
+        </div>
+
+    <?php elseif (isset($_SESSION['edit-post-success'])) : ?>
+        <div class="alert__message success container">
+            <p>
+                <?= $_SESSION['edit-post-success'];
+                unset($_SESSION['edit-post-success']);
+                ?>
+            </p>
+
+        </div>
+
+    <?php elseif (isset($_SESSION['edit-post'])) : ?>
+        <div class="alert__message error container">
+            <p>
+                <?= $_SESSION['edit-post'];
+                unset($_SESSION['edit-post']);
+                ?>
+            </p>
+
+        </div>
+    <?php elseif (isset($_SESSION['delete-post-success'])) : ?>
+        <div class="alert__message success container">
+            <p>
+                <?= $_SESSION['delete-post-success'];
+                unset($_SESSION['delete-post-success']);
+                ?>
+            </p>
+
+        </div>
+    <?php endif  ?>
     <div class="container dashboard__container">
         <button id="show__sidebar-btn" class="sidebar__toggle"><i class="uil uil-arrow-circle-right"></i></button>
         <button id="hide__sidebar-btn" class="sidebar__toggle"><i class="uil uil-arrow-circle-left"></i></button>
@@ -51,55 +94,43 @@ include 'partials/header.php';
             </ul>
         </aside>
         <main>
-            <h2>Manage Users</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th><span> Title</span></th>
-                        <th><span> Category</span></th>
-                        <th><span>Edit</span></th>
-                        <th><span>Delete</span></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <h5>Lorem, ipsum dolor sit amet consectetur adipisicing elit.</h5>
-                        </td>
-                        <td>
-                            <h5>Photography</h5>
-                        </td>
-                        <td><a href="edit-post.php" class="btn sm go">Edit</a></td>
-                        <td><a href="delete-category.php" class="btn sm danger">Delete</a></td>
+            <h2>Manage Posts</h2>
+            <?php if (mysqli_num_rows($posts) > 0) : ?>
+                <table>
+                    <thead>
+                        <tr>
+                            <th><span> Title</span></th>
+                            <th><span> Category</span></th>
+                            <th><span>Edit</span></th>
+                            <th><span>Delete</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while ($post = mysqli_fetch_assoc($posts)) : ?>
+                            <!-- get category title of each post from table -->
+                            <?php
+                            $category_id = $post['category_id'];
+                            $category_query = "SELECT title FROM categories WHERE id = $category_id";
+                            $category_result = mysqli_query($connection, $category_query);
+                            $category = mysqli_fetch_assoc($category_result);
+                            ?>
+                            <tr>
+                                <td>
+                                    <h5><?= $post['title'] ?></h5>
+                                </td>
+                                <td>
+                                    <h5><?= $category['title'] ?></h5>
+                                </td>
+                                <td><a href="<?= ROOT_URL ?>admin/edit-post.php?id=<?= $post['id'] ?>" class="btn sm go">Edit</a></td>
+                                <td><a href="<?= ROOT_URL ?>admin/delete-post.php?id=<?= $post['id'] ?>" class="btn sm danger">Delete</a></td>
 
-                    </tr>
-                    <tr>
-                        <td>
-                            <h5>Lorem, ipsum dolor sit amet consectetur adipisicing elit.</h5>
-                        </td>
-                        <td>
-                            <h5>Music</h5>
-                        </td>
-                        <td><a href="edit-post.php" class="btn sm go">Edit</a></td>
-                        <td><a href="delete-category.php" class="btn sm danger">Delete</a></td>
-
-                    </tr>
-                    <tr>
-                        <td>
-                            <h5>Lorem, ipsum dolor sit amet consectetur adipisicing elit.</h5>
-                        </td>
-                        <td>
-                            <h5>Lifestyle</h5>
-                        </td>
-                        <td><a href="edit-post.php" class="btn sm go">Edit</a></td>
-                        <td><a href="delete-category.php" class="btn sm danger">Delete</a></td>
-
-                    </tr>
-
-
-
-                </tbody>
-            </table>
+                            </tr>
+                        <?php endwhile ?>
+                    </tbody>
+                </table>
+            <?php else : ?>
+                <div class="alert__message error"><?= "No posts available" ?></div>
+            <?php endif ?>
         </main>
     </div>
 </section>

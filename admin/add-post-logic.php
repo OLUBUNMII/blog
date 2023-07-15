@@ -16,23 +16,23 @@ if (isset($_POST['submit'])) {
     $is_featured = $is_featured == 1 ?: 0;
 
     // $route="gftff";
-    $error = [];
+    // $error = [];
 
     //validate form data
     if (!$title) {
-         $error[]= "Enter a title";
+        $_SESSION['add-post'] = "Enter a title";
     }
     if (!$category_id) {
-        $error[] = "Select a category";
+        $_SESSION['add-post'] = "Select a category";
     }
-    
+
     if (!$body) {
-        $error[] = "Enter body";
+        $_SESSION['add-post'] = "Enter body";
     }
-    
+
     if (!$thumbnail['name']) {
-        $error[] = "Choose thumbnail";
-    }else{
+        $_SESSION['add-post'] = "Choose thumbnail";
+    } else {
         //work on thumbnail
         //rename the image
         $time = time(); //make each image a unique name
@@ -46,20 +46,20 @@ if (isset($_POST['submit'])) {
         $extension = end($extension);
         if (in_array($extension, $allowed_files)) {
             //make sure image is not too big. 2mb+
-            if ($thumbnail['size'] < 2_000_000) {
+            if ($thumbnail['size'] < 4_000_000) {
                 //upload thumbnail
                 move_uploaded_file($thumbnail_tmp_name, $thumbnail_destination_path);
             } else {
-                $error[] = "File size too big. Image should be less than 2mb";
+                $_SESSION['add-post'] = "File size too big. Image should be less than 4mb";
             }
         } else {
-            $error[] = "File should be png, jpg or jpeg";
+            $_SESSION['add-post'] = "File should be png, jpg or jpeg";
         }
     }
 
 
     //redirect back to add-post page if theres an error
-    if (count($error) > 0) {
+    if ($_SESSION['add-post']) {
         $_SESSION['add-post-data'] = $_POST;
         // print_r($_SESSION['add-post-data']);
         // print_r($error);
@@ -67,7 +67,7 @@ if (isset($_POST['submit'])) {
         die();
     } else {
         //set is featured for all posts
-   
+
         if ($is_featured == 1) {
             $zero_all_is_featured_query = "UPDATE posts SET is_featured=0";
             $zero_all_is_featured_result = mysqli_query($connection, $zero_all_is_featured_query);

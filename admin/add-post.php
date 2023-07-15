@@ -4,25 +4,35 @@ include 'partials/header.php';
 //fetch categories from the database
 $query = "SELECT * FROM categories";
 $categories = mysqli_query($connection, $query);
+
+//get form data back
+$title = $_SESSION['add-post-data']['title'] ?? null;
+$body = $_SESSION['add-post-data']['body'] ?? null;
+
+//delete form data session
+unset($_SESSION['add-post-data']);
 ?>
 
 <section class="form__section">
     <div class="container form__section-container">
         <h2>Add an Article</h2>
-        <div class="alert__message error">
-            <p>This is an error message 
-                
-            </p>
-        </div>
+        <?php if (isset($_SESSION['add-post'])) : ?>
+            <div class="alert__message error">
+                <p>
+                    <?= $_SESSION['add-post'];
+                    unset($_SESSION['add-post']); ?>
+                </p>
+            </div>
+        <?php endif ?>
         <form action="<?= ROOT_URL ?>admin/add-post-logic.php" enctype="multipart/form-data" method="POST">
-            <input type="text" name="title" placeholder="Title">
+            <input type="text" name="title" value="<?= $title ?>" placeholder="Title">
             <select name="category">
                 <?php while ($category = mysqli_fetch_assoc($categories)) : ?>
                     <option value="<?= $category['id'] ?>"><?= $category['title'] ?></option>
                 <?php endwhile ?>
             </select>
 
-            <textarea rows="10" name="body" placeholder="Body"></textarea>
+            <textarea rows="10" name="body" placeholder="Body"><?= $body ?></textarea>
             <?php if (isset($_SESSION['user_is_admin'])) : ?>
                 <div class="form__control inline">
                     <input type="checkbox" name="is_featured" value="1" id="is_featured" checked>

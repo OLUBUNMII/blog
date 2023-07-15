@@ -1,201 +1,126 @@
 <?php
 include 'partials/header.php';
+
+
+//fetch posts from database
+$featured_query = "SELECT * FROM posts WHERE is_featured=1";
+$featured_result = mysqli_query($connection, $featured_query);
+$featured = mysqli_fetch_assoc($featured_result);
+
+//fetch 6 posts from table
+$query = "SELECT * FROM posts ORDER BY date_time DESC LIMIT 6";
+$posts = mysqli_query($connection, $query);
 ?>
 
-<body>
 
-
+<!-- show featured posts -->
+<?php if (mysqli_num_rows($featured_result) == 1) : ?>
     <section class="featured">
         <div class="container featured__container">
 
             <div class="post__thumbnail">
-                <img src="./Img/alvin-balemesa-MYfq3tf34p8-unsplash (1).jpg" alt="">
+                <img src="./images/<?= $featured['thumbnail'] ?>" alt="">
             </div>
             <div class="post__info">
-                <a href="category-posts.php" class="category__button">#Photography</a>
-                <h2 class="post__title"><a href="post.php">Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Similique?</a>
+                <?php
+                // <!-- fetch category from categories table -->
+                $category_id = $featured['category_id'];
+                $category_query = "SELECT * FROM categories WHERE id =$category_id";
+                $category_result = mysqli_query($connection, $category_query);
+                $category = mysqli_fetch_assoc($category_result);
+                $category_title = $category['title'];
+                ?>
+                <a href="<?= ROOT_URL ?>category-posts.php?id=<?= $featured['category_id'] ?>" class="category__button"><?= $category_title ?></a>
+                <h2 class="post__title"><a href="<?= ROOT_URL ?>post.php?id=<?= $featured['id'] ?> "><?= $featured['title'] ?></a>
                 </h2>
-                <p class="post__body">Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Expedita inventore ratione deserunt similique,
-                    laudantium veniam quibusdam nesciunt iusto est doloribus quasi voluptatem molestias?
+                <p class="post__body">
+                    <?= substr($featured['body'], 0, 300) ?>...
 
                 </p>
                 <div class="post__author">
+                    <?php
+                    //fetch authors from users table
+                    $author_id = $featured['author_id'];
+                    $author_query = "SELECT * FROM users WHERE id=$author_id";
+                    $author_result = mysqli_query($connection, $author_query);
+                    $author = mysqli_fetch_assoc($author_result);
+
+                    ?>
                     <div class="post__author-avatar">
-                        <img src="./Img/prince-akachi-4Yv84VgQkRM-unsplash.jpg" alt="">
+                        <img src="./images/<?= $author['avatar'] ?>">
                     </div>
                     <div class="post__author-info">
-                        <h5>Torobong Lucy</h5>
-                        <small>August 30, 2022 - 11:11</small>
+                        <h5><?= "{$author['firstname']} {$author['lastname']}" ?></h5>
+                        <small>
+                            <?= date("M d, Y - H:i", strtotime($featured['date_time'])) ?>
+                        </small>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+<?php endif ?>
 
-    <section class="posts">
-        <div class="container posts__container">
+<section class="posts <?= $featured ? '' : 'section__extra-margin' ?>">
+    <div class="container posts__container">
+        <?php while ($post = mysqli_fetch_assoc($posts)) : ?>
             <article class="post">
                 <div class="post__thumbnail">
-                    <img src="./Img/jed-villejo-pumko2FFxY0-unsplash.jpg" alt="">
+                    <img src="./images/<?= $post['thumbnail'] ?>">
                 </div>
                 <div class="post__info">
-                    <a href="" class="category__button">Lifestyle</a>
-                    <h3 class="post__title"><a href="post.php">Lorem ipsum dolor sit amet consectetur, adipisicing
-                            elit. A, sint.</a></h3>
-                    <p class="post__body">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero, neque in! At, iure! Ratione
-                        enim molestiae libero voluptatem delectus!
+
+                    <?php
+                    // <!-- fetch category from categories table -->
+                    $category_id = $post['category_id'];
+                    $category_query = "SELECT * FROM categories WHERE id=$category_id";
+                    $category_result = mysqli_query($connection, $category_query);
+                    $category = mysqli_fetch_assoc($category_result);
+                    // $category_title = $category['title'];
+                    ?>
+                    <a href="<?= ROOT_URL ?>category-posts.php?id=<?= $post['category_id'] ?>" class="category__button"><?= $category['title'] ?></a>
+                    <h3 class="post__title"><a href="<?= ROOT_URL ?>post.php?id=<?= $post['id'] ?> "><?= $post['title'] ?></a></h3>
+                    <p class="post__body"><?= substr($post['body'], 0, 150) ?>...
                     </p>
                     <div class="post__author">
+                        <?php
+                        //fetch authors from users table
+                        $author_id = $post['author_id'];
+                        $author_query = "SELECT * FROM users WHERE id=$author_id";
+                        $author_result = mysqli_query($connection, $author_query);
+                        $author = mysqli_fetch_assoc($author_result);
+
+                        ?>
                         <div class="post__author-avatar">
-                            <img src="./Img/may-gauthier-s3mR42Spras-unsplash.jpg " alt="">
+                            <img src="./images/<?= $author['avatar'] ?> ">
                         </div>
                         <div class="post__author-info">
-                            <h5>Sean JACOBS</h5>
-                            <small>May 27, 2009 - 12:45</small>
+                            <h5><?= "{$author['firstname']} {$author['lastname']}" ?></h5>
+                            <small><?= date("M d, Y - H:i", strtotime($post['date_time'])) ?></small>
                         </div>
                     </div>
 
                 </div>
             </article>
-            <article class="post">
-                <div class="post__thumbnail">
-                    <img src="./Img/robert-andall-h2dY1o-3rp0-unsplash.jpg " alt="">
-                </div>
-                <div class="post__info">
-                    <a href="category-posts.php" class="category__button">Fashion</a>
-                    <h3 class="post__title"><a href="post.php">Lorem ipsum dolor sit amet consectetur, adipisicing
-                            elit. A, sint.</a></h3>
-                    <p class="post__body">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero, neque in! At, iure! Ratione
-                        enim molestiae libero voluptatem delectus!
-                    </p>
-                    <div class="post__author">
-                        <div class="post__author-avatar">
-                            <img src="./Img/IMG_1086.jpg" alt="">
-                        </div>
-                        <div class="post__author-info">
-                            <h5>Literally Jimmy</h5>
-                            <small>April 27, 2020 - 12:45</small>
-                        </div>
-                    </div>
+        <?php endwhile ?>
 
-                </div>
-            </article>
-            <article class="post">
-                <div class="post__thumbnail">
-                    <img src="./Img/gayatri-malhotra-WzfqobnrSVc-unsplash.jpg" alt="">
-                </div>
-                <div class="post__info">
-                    <a href="" class="category__button">Politics</a>
-                    <h3 class="post__title"><a href="post.php">Lorem ipsum dolor sit amet consectetur, adipisicing
-                            elit. A, sint.</a></h3>
-                    <p class="post__body">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero, neque in! At, iure! Ratione
-                        enim molestiae libero voluptatem delectus!
-                    </p>
-                    <div class="post__author">
-                        <div class="post__author-avatar">
-                            <img src="./Img/luis-villasmil--5kerUxMu6I-unsplash.jpg " alt="">
-                        </div>
-                        <div class="post__author-info">
-                            <h5>Sharon Jasper</h5>
-                            <small>May 12, 2022 - 12:45</small>
-                        </div>
-                    </div>
+    </div>
+</section>
 
-                </div>
-            </article>
-            <article class="post">
-                <div class="post__thumbnail">
-                    <img src="./Img/arian-darvishi-A4YZ1RsIIYw-unsplash.jpg" alt="">
-                </div>
-                <div class="post__info">
-                    <a href="" class="category__button">Music</a>
-                    <h3 class="post__title"><a href="post.php">Lorem ipsum dolor sit amet consectetur, adipisicing
-                            elit. A, sint.</a></h3>
-                    <p class="post__body">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero, neque in! At, iure! Ratione
-                        enim molestiae libero voluptatem delectus!
-                    </p>
-                    <div class="post__author">
-                        <div class="post__author-avatar">
-                            <img src="./Img/jurien-huggins-b_XgP4vM47E-unsplash.jpg" alt="">
-                        </div>
-                        <div class="post__author-info">
-                            <h5>Abel Tesfaye</h5>
-                            <small>November 25, 2016 - 12:45</small>
-                        </div>
-                    </div>
+<section class="category__buttons">
+    <div class="container category__buttons-container">
+        <?php
+        $all_categories_query = "SELECT * FROM categories";
+        $all_categories = mysqli_query($connection, $all_categories_query);
 
-                </div>
-            </article>
-            <article class="post">
-                <div class="post__thumbnail">
-                    <img src="./Img/sergi-dolcet-escrig-hrK7QVvOpH8-unsplash.jpg" alt="">
-                </div>
-                <div class="post__info">
-                    <a href="" class="category__button">Beauty</a>
-                    <h3 class="post__title"><a href="post.php">Lorem ipsum dolor sit amet consectetur, adipisicing
-                            elit. A, sint.</a></h3>
-                    <p class="post__body">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero, neque in! At, iure! Ratione
-                        enim molestiae libero voluptatem delectus!
-                    </p>
-                    <div class="post__author">
-                        <div class="post__author-avatar">
-                            <img src="./Img/jeffery-erhunse-BQMZ5ligqps-unsplash.jpg" alt="">
-                        </div>
-                        <div class="post__author-info">
-                            <h5>Torobong Lucy</h5>
-                            <small>February 26, 2021 - 12:45</small>
-                        </div>
-                    </div>
+        ?>
+        <?php while ($category = mysqli_fetch_assoc($all_categories)) : ?>
+            <a href="<?= ROOT_URL ?>category-posts.php?id=<?= $category['id'] ?>" class="category__button"><?= $category['title'] ?></a>
+        <?php endwhile ?>
+    </div>
+</section>
 
-                </div>
-            </article>
-            <article class="post">
-                <div class="post__thumbnail">
-                    <img src="./Img/tosin-james-DC03k6PqyHc-unsplash.jpg" alt="">
-                </div>
-                <div class="post__info">
-                    <a href="" class="category__button">Politics</a>
-                    <h3 class="post__title"><a href="post.php">Lorem ipsum dolor sit amet consectetur, adipisicing
-                            elit. A, sint.</a></h3>
-                    <p class="post__body">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero, neque in! At, iure! Ratione
-                        enim molestiae libero voluptatem delectus!
-                    </p>
-                    <div class="post__author">
-                        <div class="post__author-avatar">
-                            <img src="./Img/GettyImages-501299338-937x625.jpg " alt="">
-                        </div>
-                        <div class="post__author-info">
-                            <h5>Olumide Emmanuel</h5>
-                            <small>May 27, 2009 - 12:45</small>
-                        </div>
-                    </div>
 
-                </div>
-            </article>
-
-        </div>
-    </section>
-
-    <section class="category__buttons">
-        <div class="container category__buttons-container">
-            <a href="" class="category__button">Politics</a>
-            <a href="" class="category__button">Fashion</a>
-            <a href="" class="category__button">Lifestyle</a>
-            <a href="" class="category__button">Music</a>
-            <a href="" class="category__button">Beauty</a>
-            <a href="" class="category__button">Photography<a>
-        </div>
-    </section>
-
-</body>
 
 <?php
 include 'partials/footer.php';
